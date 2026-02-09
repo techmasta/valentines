@@ -4,20 +4,33 @@ const buttons = document.getElementById("buttons");
 const message = document.getElementById("message");
 const celebration = document.getElementById("celebration");
 
-const getSafePosition = () => {
+const getSafePosition = (pointerX, pointerY) => {
   const padding = 16;
   const buttonRect = noButton.getBoundingClientRect();
   const maxX = window.innerWidth - buttonRect.width - padding;
   const maxY = window.innerHeight - buttonRect.height - padding;
 
-  const randomX = Math.max(padding, Math.random() * maxX);
-  const randomY = Math.max(padding, Math.random() * maxY);
+  const buttonCenterX = buttonRect.left + buttonRect.width / 2;
+  const buttonCenterY = buttonRect.top + buttonRect.height / 2;
+  const targetX = pointerX ?? buttonCenterX;
+  const targetY = pointerY ?? buttonCenterY;
 
-  return { x: randomX, y: randomY };
+  const vectorX = buttonCenterX - targetX || (Math.random() - 0.5);
+  const vectorY = buttonCenterY - targetY || (Math.random() - 0.5);
+  const length = Math.hypot(vectorX, vectorY) || 1;
+  const distance = 140 + Math.random() * 160;
+
+  const proposedX = buttonCenterX + (vectorX / length) * distance;
+  const proposedY = buttonCenterY + (vectorY / length) * distance;
+
+  const clampedX = Math.min(Math.max(proposedX - buttonRect.width / 2, padding), maxX);
+  const clampedY = Math.min(Math.max(proposedY - buttonRect.height / 2, padding), maxY);
+
+  return { x: clampedX, y: clampedY };
 };
 
-const moveNoButton = () => {
-  const { x, y } = getSafePosition();
+const moveNoButton = (event) => {
+  const { x, y } = getSafePosition(event?.clientX, event?.clientY);
   noButton.style.position = "fixed";
   noButton.style.left = `${x}px`;
   noButton.style.top = `${y}px`;
@@ -25,11 +38,11 @@ const moveNoButton = () => {
 
 noButton.addEventListener("pointerdown", (event) => {
   event.preventDefault();
-  moveNoButton();
+  moveNoButton(event);
 });
 
-noButton.addEventListener("mouseover", () => {
-  moveNoButton();
+noButton.addEventListener("pointerenter", (event) => {
+  moveNoButton(event);
 });
 
 const createHeartsBurst = () => {
@@ -66,6 +79,30 @@ yesButton.addEventListener("click", () => {
   });
   createHeartsBurst();
 });
+
+const createFloatingHearts = () => {
+  const heartsContainer = document.querySelector(".hearts");
+  const heartCount = 22;
+
+  for (let i = 0; i < heartCount; i += 1) {
+    const heart = document.createElement("span");
+    heart.classList.add("floating-heart");
+    const size = 12 + Math.random() * 22;
+    const left = Math.random() * 100;
+    const delay = Math.random() * 6;
+    const duration = 12 + Math.random() * 10;
+
+    heart.style.setProperty("--size", `${size}px`);
+    heart.style.setProperty("--delay", `${delay}s`);
+    heart.style.setProperty("--duration", `${duration}s`);
+    heart.style.left = `${left}vw`;
+    heart.style.top = `${-20 - Math.random() * 40}vh`;
+
+    heartsContainer.appendChild(heart);
+  }
+};
+
+createFloatingHearts();
 
 window.addEventListener("resize", () => {
   noButton.style.position = "relative";

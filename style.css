@@ -32,24 +32,41 @@ body {
   z-index: 0;
 }
 
-.hearts::before,
-.hearts::after {
-  content: "";
+.hearts {
   position: absolute;
-  inset: -20% 0 0 0;
-  background-image: radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.7) 0 6px, transparent 7px),
-    radial-gradient(circle at 70% 10%, rgba(255, 255, 255, 0.55) 0 6px, transparent 7px),
-    radial-gradient(circle at 40% 70%, rgba(255, 255, 255, 0.6) 0 6px, transparent 7px),
-    radial-gradient(circle at 80% 60%, rgba(255, 255, 255, 0.5) 0 6px, transparent 7px),
-    radial-gradient(circle at 10% 80%, rgba(255, 255, 255, 0.65) 0 6px, transparent 7px);
-  background-size: 220px 220px;
-  animation: floatHearts 16s linear infinite;
-  opacity: 0.7;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 
-.hearts::after {
-  animation-duration: 22s;
-  opacity: 0.5;
+.hearts .floating-heart {
+  position: absolute;
+  width: var(--size, 18px);
+  height: var(--size, 18px);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 145, 200, 0.85));
+  transform: rotate(45deg);
+  border-radius: 6px;
+  opacity: 0.7;
+  animation: floatHearts var(--duration, 16s) linear infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+.hearts .floating-heart::before,
+.hearts .floating-heart::after {
+  content: "";
+  position: absolute;
+  width: var(--size, 18px);
+  height: var(--size, 18px);
+  background: inherit;
+  border-radius: 50%;
+}
+
+.hearts .floating-heart::before {
+  left: calc(var(--size, 18px) / -2);
+}
+
+.hearts .floating-heart::after {
+  top: calc(var(--size, 18px) / -2);
 }
 
 .card {
@@ -168,10 +185,10 @@ h1 {
 
 @keyframes floatHearts {
   0% {
-    transform: translateY(0);
+    transform: translateY(-10vh) rotate(45deg);
   }
   100% {
-    transform: translateY(20%);
+    transform: translateY(120vh) rotate(45deg);
   }
 }
 
